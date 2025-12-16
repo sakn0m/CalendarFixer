@@ -1,0 +1,78 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from ics import Calendar
+
+def filter_calendar():
+    """
+    Apre un file .ics, forza il fuso orario 'Europe/Brussels' su ogni evento
+    per prevenire conversioni errate, filtra gli eventi non desiderati
+    e salva una copia modificata.
+    """
+    root = tk.Tk()
+    root.withdraw()
+
+    try:
+        file_path = filedialog.askopenfilename(
+            title="Seleziona il file del calendario (.ics)",
+            filetypes=(("File iCalendar", "*.ics"), ("Tutti i file", "*.*"))
+        )
+
+        if not file_path:
+            return
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            calendar = Calendar(f.read())
+
+        # Elenco dei corsi da mantenere
+        courses_to_keep = [
+            "MACHINE LEARNING",
+            "BUSINESS LAW AND ICT",
+            "DATA, AI AND ORGANIZATIONS",
+            "DATA ANALYSIS FOR BUSINESS",
+            "FRANCESE INFRASETTIMANALE - GR.19",
+            "GRAND CHALLENGE"  # --- HO AGGIUNTO QUESTO ---
+        ]
+        
+        # Fuso orario da forzare su ogni evento
+        TARGET_TZ = "Europe/Brussels"
+
+        # --- CORREZIONE CHIAVE ---
+        # Iteriamo su ogni evento e gli riassegnamo il fuso orario corretto.
+        # Il metodo .replace(tzinfo=...) cambia il fuso orario di un evento
+        # SENZA cambiare l'orario (es. le 10:30 rimangono 10:30, ma vengono etichettate
+        # come orario di Bruxelles, non più UTC o altro).
+        # Questo è il modo corretto per gestire un file con orari già giusti.
+        
+        events_processed_and_filtered = []
+        for event in calendar.events:
+            # Forziamo il fuso orario corretto
+            event.begin = event.begin.replace(tzinfo=TARGET_TZ)
+            event.end = event.end.replace(tzinfo=TARGET_TZ)
+            
+            # Ora che l'evento ha il fuso orario giusto, controlliamo se va tenuto
+            if any(course in event.name for course in courses_to_keep):
+                events_processed_and_filtered.append(event)
+        
+        # Sostituiamo la vecchia lista di eventi con la nostra nuova lista
+        # che contiene solo gli eventi filtrati e con il fuso orario corretto.
+        calendar.events = set(events_processed_and_filtered)
+        # --- FINE DELLA CORREZIONE ---
+
+        output_path = file_path.replace(".ics", "_filtered.ics")
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.writelines(calendar)
+        
+        messagebox.showinfo(
+            "Successo",
+            f"Calendario filtrato creato con successo!\n\nIl file è stato salvato come:\n{output_path}"
+        )
+
+    except Exception as e:
+        messagebox.showerror(
+            "Errore",
+            f"Si è verificato un errore durante l'elaborazione del file:\n\n{e}"
+        )
+
+if __name__ == "__main__":
+    filter_calendar()
