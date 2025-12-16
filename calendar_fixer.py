@@ -24,6 +24,7 @@ def filter_calendar():
             calendar = Calendar(f.read())
 
         # Elenco dei corsi da mantenere
+        # Elenco dei corsi da mantenere
         courses_to_keep = []
         
         # Fuso orario da forzare su ogni evento
@@ -35,14 +36,20 @@ def filter_calendar():
         # come orario di Bruxelles, non più UTC o altro).
         
         events_processed_and_filtered = []
+        kept_count = 0
+        total_count = len(calendar.events)
+
         for event in calendar.events:
             # Forziamo il fuso orario corretto
             event.begin = event.begin.replace(tzinfo=TARGET_TZ)
             event.end = event.end.replace(tzinfo=TARGET_TZ)
             
             # Ora che l'evento ha il fuso orario giusto, controlliamo se va tenuto
-            if any(course in event.name for course in courses_to_keep):
+            # Case insensitive check
+            event_name_lower = event.name.lower() if event.name else ""
+            if any(course.lower() in event_name_lower for course in courses_to_keep):
                 events_processed_and_filtered.append(event)
+                kept_count += 1
         
         # Sostituiamo la vecchia lista di eventi con la nostra nuova lista
         # che contiene solo gli eventi filtrati e con il fuso orario corretto.
@@ -55,7 +62,10 @@ def filter_calendar():
         
         messagebox.showinfo(
             "Successo",
-            f"Calendario filtrato creato con successo!\n\nIl file è stato salvato come:\n{output_path}"
+            f"Calendario filtrato creato con successo!\n\n"
+            f"Eventi totali trovati: {total_count}\n"
+            f"Eventi mantenuti: {kept_count}\n\n"
+            f"Il file è stato salvato come:\n{output_path}"
         )
 
     except Exception as e:
