@@ -24,24 +24,15 @@ def filter_calendar():
             calendar = Calendar(f.read())
 
         # Elenco dei corsi da mantenere
-        courses_to_keep = [
-            "MACHINE LEARNING",
-            "BUSINESS LAW AND ICT",
-            "DATA, AI AND ORGANIZATIONS",
-            "DATA ANALYSIS FOR BUSINESS",
-            "FRANCESE INFRASETTIMANALE - GR.19",
-            "GRAND CHALLENGE"  # --- HO AGGIUNTO QUESTO ---
-        ]
+        courses_to_keep = []
         
         # Fuso orario da forzare su ogni evento
         TARGET_TZ = "Europe/Brussels"
 
-        # --- CORREZIONE CHIAVE ---
         # Iteriamo su ogni evento e gli riassegnamo il fuso orario corretto.
         # Il metodo .replace(tzinfo=...) cambia il fuso orario di un evento
         # SENZA cambiare l'orario (es. le 10:30 rimangono 10:30, ma vengono etichettate
         # come orario di Bruxelles, non più UTC o altro).
-        # Questo è il modo corretto per gestire un file con orari già giusti.
         
         events_processed_and_filtered = []
         for event in calendar.events:
@@ -56,7 +47,6 @@ def filter_calendar():
         # Sostituiamo la vecchia lista di eventi con la nostra nuova lista
         # che contiene solo gli eventi filtrati e con il fuso orario corretto.
         calendar.events = set(events_processed_and_filtered)
-        # --- FINE DELLA CORREZIONE ---
 
         output_path = file_path.replace(".ics", "_filtered.ics")
         
