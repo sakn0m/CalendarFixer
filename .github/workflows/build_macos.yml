@@ -1,0 +1,94 @@
+name: Build macOS App
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Universal Binary
+        run: |
+          # Setup Directory
+          APP_NAME="CalendarFixer"
+          APP_DIR="$APP_NAME.app"
+          CONTENTS_DIR="$APP_DIR/Contents"
+          MACOS_DIR="$CONTENTS_DIR/MacOS"
+          mkdir -p "$MACOS_DIR"
+
+          # Get SDK path
+          SDK_PATH=$(xcrun --show-sdk-path)
+
+          # Compile for Apple Silicon (arm64)
+          echo "Compiling for arm64..."
+          swiftc -o "$MACOS_DIR/$APP_NAME-arm64" \
+              -sdk "$SDK_PATH" \
+              -target arm64-apple-macos11.0 \
+              CalendarFixerApp/CalendarFixerApp.swift \
+              CalendarFixerApp/ContentView.swift \
+              CalendarFixerApp/CalendarProcessor.swift
+
+          # Compile for Intel (x86_64)
+          echo "Compiling for x86_64..."
+          swiftc -o "$MACOS_DIR/$APP_NAME-x86_64" \
+              -sdk "$SDK_PATH" \
+              -target x86_64-apple-macos11.0 \
+              CalendarFixerApp/CalendarFixerApp.swift \
+              CalendarFixerApp/ContentView.swift \
+              CalendarFixerApp/CalendarProcessor.swift
+
+          # Create Universal Binary using lipo
+          echo "Creating Universal Binary..."
+          lipo -create -output "$MACOS_DIR/$APP_NAME" \
+              "$MACOS_DIR/$APP_NAME-arm64" \
+              "$MACOS_DIR/$APP_NAME-x86_64"
+
+          # Cleanup intermediate binaries
+          rm "$MACOS_DIR/$APP_NAME-arm64" "$MACOS_DIR/$APP_NAME-x86_64"
+
+          # Create Info.plist
+          PLIST="$CONTENTS_DIR/Info.plist"
+          cat > "$PLIST" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>$APP_NAME</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.saknom.CalendarFixer</string>
+              <key>CFBundleName</key>
+              <string>$APP_NAME</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+              <key>CFBundleShortVersionString</key>
+              <string>${{ github.event.release.tag_name }}</string>
+              <key>CFBundleVersion</key>
+              <string>1</string>
+              <key>LSMinimumSystemVersion</key>
+              <string>11.0</string>
+              <key>NSHighResolutionCapable</key>
+              <true/>
+          </dict>
+          </plist>
+          EOF
+          
+          # Sign Ad-Hoc
+          codesign --force --deep --sign - "$APP_DIR"
+
+      - name: Zip App
+        run: |
+          zip -r CalendarFixer_macOS.zip CalendarFixer.app
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./CalendarFixer_macOS.zip
+          asset_name: CalendarFixer_macOS.zip
+          asset_content_type: application/zip

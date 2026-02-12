@@ -4,7 +4,9 @@ CalendarFixer is a simple macOS tool to fix timezones in ICS calendar files and 
 
 ## Features
 
-- **Universal Binary**: Runs natively on both Apple Silicon (M1/M2/M3) and Intel Macs.
+- **Cross-Platform**:
+    - **macOS**: Native Universal App (Apple Silicon + Intel).
+    - **Windows**: Native executable (`.exe`).
 - **Timezone Fix**: Forces events to `Europe/Brussels` (configurable in code) to prevent timezone shifts.
 - **Event Filtering**: Allows you to specify keywords (e.g., course names) to keep. All other events are removed. *If no keywords are provided, all events are kept.*
 - **Persistent Settings**: Remembers your filter keywords between launches.
@@ -12,17 +14,27 @@ CalendarFixer is a simple macOS tool to fix timezones in ICS calendar files and 
 
 ## Installation
 
+### macOS
 1.  Go to the [Releases](../../releases) page.
-2.  Download `CalendarFixer.zip`.
+2.  Download `CalendarFixer_macOS.zip`.
 3.  Unzip the file.
 4.  Drag `CalendarFixer.app` to your `Applications` folder.
 
+### Windows
+1.  Go to the [Releases](../../releases) page.
+2.  Download `CalendarFixer_Windows.exe`.
+3.  Run the executable directly.
+
 ## Usage
 
+### macOS
 1.  Open **CalendarFixer** from your Applications folder.
     - *Note*: You may see a warning about an "Unidentified Developer". Right-click the app and select **Open** to bypass this.
-2.  Enter the names of the courses/events you want to keep in the text field, separated by commas (e.g., `Math, Physics, History`).
-    - Leave it empty to keep *all* events and just fix the timezones.
+2.  Enter the names of the courses/events you want to keep.
 3.  Click **Select .ics File**.
-4.  Choose your `.ics` calendar file.
-5.  Success! The app will create a new file ending in `_filtered.ics` in the same folder as the original.
+
+### Windows
+1.  Run `CalendarFixer_Windows.exe`.
+2.  A window will appear allowing you to select the file.
+3.  Choose your `.ics` calendar file.
+4.  Success! The app will create a new file ending in `_filtered.ics` in the same folder as the original.
