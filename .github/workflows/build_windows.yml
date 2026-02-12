@@ -22,7 +22,7 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile --windowed --name calendar_fixer --icon=NONE legacy/calendar_fixer.py
+          pyinstaller --onefile --windowed --name calendar_fixer --icon=NONE calendar_fixer.py
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
