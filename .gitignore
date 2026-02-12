@@ -1,0 +1,7 @@
+*.app
+*.o
+.DS_Store
+build/
+__pycache__/
+*.ics
+CalendarFixerApp/build.sh
