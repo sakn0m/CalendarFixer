@@ -35,6 +35,7 @@ CalendarFixer is a simple macOS tool to fix timezones in ICS calendar files and 
 
 ### Windows
 1.  Run `CalendarFixer_Windows.exe`.
-2.  A window will appear allowing you to select the file.
-3.  Choose your `.ics` calendar file.
-4.  Success! The app will create a new file ending in `_filtered.ics` in the same folder as the original.
+2.  The application will open instantly.
+3.  Enter the names of the courses/events you want to keep.
+4.  Click **Select .ics File** and choose your calendar file.
+5.  Success! The app will create a new file ending in `_filtered.ics` in the same folder as the original.

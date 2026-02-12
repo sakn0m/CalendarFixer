@@ -5,3 +5,4 @@ build/
 __pycache__/
 *.ics
 CalendarFixerApp/build.sh
+CalendarFixerMac/build.sh

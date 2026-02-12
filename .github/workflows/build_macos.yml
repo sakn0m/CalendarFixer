@@ -27,18 +27,18 @@ jobs:
           swiftc -o "$MACOS_DIR/$APP_NAME-arm64" \
               -sdk "$SDK_PATH" \
               -target arm64-apple-macos11.0 \
-              CalendarFixerApp/CalendarFixerApp.swift \
-              CalendarFixerApp/ContentView.swift \
-              CalendarFixerApp/CalendarProcessor.swift
+              CalendarFixerMac/CalendarFixerApp.swift \
+              CalendarFixerMac/ContentView.swift \
+              CalendarFixerMac/CalendarProcessor.swift
 
           # Compile for Intel (x86_64)
           echo "Compiling for x86_64..."
           swiftc -o "$MACOS_DIR/$APP_NAME-x86_64" \
               -sdk "$SDK_PATH" \
               -target x86_64-apple-macos11.0 \
-              CalendarFixerApp/CalendarFixerApp.swift \
-              CalendarFixerApp/ContentView.swift \
-              CalendarFixerApp/CalendarProcessor.swift
+              CalendarFixerMac/CalendarFixerApp.swift \
+              CalendarFixerMac/ContentView.swift \
+              CalendarFixerMac/CalendarProcessor.swift
 
           # Create Universal Binary using lipo
           echo "Creating Universal Binary..."
